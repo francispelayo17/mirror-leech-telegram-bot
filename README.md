@@ -517,7 +517,7 @@ To enable deployment:
    - `DEPLOY_KNOWN_HOSTS`: the host's SSH known-hosts entry, verified against a trusted fingerprint.
 3. Make the GHCR package public, or sign in to GHCR on the host with credentials that can pull the package.
 
-Each successful push to `master` rebuilds and publishes the image, then replaces the `mltb` container on the configured host. The container uses `--restart unless-stopped`, so Docker restarts it after host reboots. Without `DEPLOY_HOST`, the deploy job is skipped and the workflow only builds/publishes the image.
+Each push to `master` rebuilds and publishes the image, then replaces the `mltb` container on the configured host and verifies that it remains running after startup. If deployment settings are missing or the bot exits, the workflow fails instead of silently reporting a successful deployment. The container uses `--restart unless-stopped`, so Docker restarts it after host reboots. Pull requests and version tags build/publish without deploying.
 
 </details>
 
