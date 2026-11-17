@@ -504,6 +504,22 @@ Make sure you still mount the repo folder and installed the docker from official
 ------
 
 <details>
+  <summary><h3>GitHub Actions (publish image to GHCR)</h3></summary>
+
+The workflow builds the Docker image for pull requests and publishes it to GitHub Container Registry on pushes to `master`, version tags (`v*`), or a manual run. Pull requests only build the image; they do not publish it. This publishes an image but does not deploy or run the bot on a server.
+
+After a successful push, pull the image on your Docker host (replace `OWNER/REPOSITORY` with your GitHub repository path):
+
+```
+docker pull ghcr.io/OWNER/REPOSITORY:latest
+docker run --network host --restart on-failure --env-file .env ghcr.io/OWNER/REPOSITORY:latest
+```
+
+Create `.env` on the host with the required configuration values (`BOT_TOKEN`, `OWNER_ID`, `TELEGRAM_API`, and `TELEGRAM_HASH`). Keep it private and do not commit it. The GHCR package may need to be made public in the repository's **Packages** settings, or the host must authenticate to GHCR before pulling a private image.
+
+</details>
+
+<details>
   <summary><h3>Using Official Docker Commands</h3></summary>
 
 - Build Docker image:
