@@ -492,6 +492,15 @@ Make sure you still mount the repo folder and installed the docker from official
     1. Using official docker commands.
     2. Using docker compose plugin. (Recommended)
 
+<details>
+  <summary><h3>Google Colab (experimental)</h3></summary>
+
+- Open [colab.ipynb](./colab.ipynb) in Google Colab and run its cells from top to bottom. The notebook installs the required system and Python packages, starts Aria2, qBittorrent, and SABnzbd on loopback, and prompts for the required Telegram credentials without saving them to the repository.
+- Colab runtimes are temporary and can disconnect or be recycled; this is suitable for testing or short-lived runs, not reliable 24/7 hosting. `/content` is ephemeral. Set `DATABASE_URL` when prompted if bot settings should persist across runtime resets.
+- Do not expose the local service ports or share a notebook containing credentials. For persistent deployment, use the Docker instructions below.
+
+</details>
+
 ------
 
 <details>
