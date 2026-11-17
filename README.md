@@ -504,18 +504,20 @@ Make sure you still mount the repo folder and installed the docker from official
 ------
 
 <details>
-  <summary><h3>GitHub Actions (publish image to GHCR)</h3></summary>
+  <summary><h3>GitHub Actions (deploy bot to a Docker host)</h3></summary>
 
-The workflow builds the Docker image for pull requests and publishes it to GitHub Container Registry on pushes to `master`, version tags (`v*`), or a manual run. Pull requests only build the image; they do not publish it. This publishes an image but does not deploy or run the bot on a server.
+The workflow builds the image for pull requests and publishes it to GitHub Container Registry (GHCR) on pushes to `master`, version tags (`v*`), or a manual run. Pull requests only build the image. When configured, a push to `master` also deploys the bot to your Docker host; the GitHub runner itself is temporary and is not used to keep the bot running.
 
-After a successful push, pull the image on your Docker host (replace `OWNER/REPOSITORY` with your GitHub repository path):
+To enable deployment:
 
-```
-docker pull ghcr.io/OWNER/REPOSITORY:latest
-docker run --network host --restart on-failure --env-file .env ghcr.io/OWNER/REPOSITORY:latest
-```
+1. Prepare a Linux host with Docker installed, an SSH account allowed to run Docker, and `/opt/mltb/.env` containing `BOT_TOKEN`, `OWNER_ID`, `TELEGRAM_API`, and `TELEGRAM_HASH`. Keep the env file private.
+2. In the repository's **Settings → Secrets and variables → Actions**, add the repository variable `DEPLOY_HOST` (the host name or IP) and these secrets:
+   - `DEPLOY_USER`: SSH user on the Docker host.
+   - `DEPLOY_SSH_KEY`: private SSH key authorized for that user.
+   - `DEPLOY_KNOWN_HOSTS`: the host's SSH known-hosts entry, verified against a trusted fingerprint.
+3. Make the GHCR package public, or sign in to GHCR on the host with credentials that can pull the package.
 
-Create `.env` on the host with the required configuration values (`BOT_TOKEN`, `OWNER_ID`, `TELEGRAM_API`, and `TELEGRAM_HASH`). Keep it private and do not commit it. The GHCR package may need to be made public in the repository's **Packages** settings, or the host must authenticate to GHCR before pulling a private image.
+Each successful push to `master` rebuilds and publishes the image, then replaces the `mltb` container on the configured host. The container uses `--restart unless-stopped`, so Docker restarts it after host reboots. Without `DEPLOY_HOST`, the deploy job is skipped and the workflow only builds/publishes the image.
 
 </details>
 
